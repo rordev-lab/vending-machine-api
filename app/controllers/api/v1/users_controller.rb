@@ -5,7 +5,7 @@ module Api
     class UsersController < ApplicationController
       before_action :authenticate_api_user!
       before_action :set_user, only: %i[show update destroy]
-      before_action :validate_buyer, only: :deposit
+      before_action :validate_buyer, only: %i[deposit reset_deposit]
 
       # GET /api/v1/users
       def index
@@ -36,7 +36,17 @@ module Api
 
       def deposit
         @user = User.find(params[:user_id])
-        if @user.update(deposit_params)
+        deposit_coins = @user.update_coins(deposit_params)
+        if @user.update(deposit_coins)
+          render json: @user
+        else
+          render json: @user.errors, status: :unprocessable_entity
+        end
+      end
+
+      def reset_deposit
+        @user = User.find(params[:user_id])
+        if @user.reset_deposit
           render json: @user
         else
           render json: @user.errors, status: :unprocessable_entity

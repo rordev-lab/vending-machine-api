@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :products
       resources :users, except: [:create, :edit] do
         put :deposit
+        put :reset_deposit
       end
     end
   end
