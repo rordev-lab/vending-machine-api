@@ -73,7 +73,7 @@ module Api
         return if current_api_user.buyer?
 
         render json: {
-          error: 'Only buyer can deposit money',
+          error: 'Only buyer can deposit/reset money',
           status: :unprocessable_entity
         }
       end

@@ -9,7 +9,9 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :products
+      resources :products do
+        get :buy, on: :collection
+      end
       resources :users, except: [:create, :edit] do
         put :deposit
         put :reset_deposit

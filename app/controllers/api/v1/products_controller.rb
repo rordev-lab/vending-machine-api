@@ -46,6 +46,35 @@ module Api
         render json: { message: 'Product deleted successfully' }, status: :ok
       end
 
+      # BUY /api/v1/products/buy
+      def buy
+        buyer = current_api_user
+        product = Product.find(params[:product_id])
+        quantity = params[:quantity].to_i
+        total_cost = product.cost * quantity
+        if product.amount_available.to_i < quantity
+          render json: {
+            error: 'Product is out of stock',
+            status: :unprocessable_entity
+          }
+        elsif buyer.total_money_deposited < total_cost
+          render json: {
+            error: "Don't have sufficient deposit amount",
+            status: :unprocessable_entity
+          }
+        else
+          change_hash = {}
+          change_hash[:deposit] = BuyProduct.run(buyer, product, total_cost, quantity).to_json
+
+          render json: {
+            total_spend: total_cost,
+            products: product,
+            change: JSON.parse(change_hash[:deposit]),
+            status: :ok
+          }
+        end
+      end
+
       private
 
       # Use callbacks to share common setup or constraints between actions.
