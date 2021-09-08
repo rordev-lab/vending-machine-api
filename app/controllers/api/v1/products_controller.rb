@@ -10,7 +10,7 @@ module Api
 
       # GET /api/v1/products
       def index
-        @products = Product.all
+        @products = Product.all.order('created_at')
 
         render json: @products
       end
